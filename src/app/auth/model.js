@@ -18,3 +18,13 @@ export const RegisterSchema = z.object({
     message: "passwords do not match",
     path: ["confirm_password"],
 })
+
+
+export const LoginSchema = z.object({
+    email: z
+        .email({ message: "invalid email" }),
+    password: z
+        .string()
+        .min(6, { message: "password must be at least 6 characters long" })
+        .max(16, { message: "password must be at most 16 characters long" }),
+});

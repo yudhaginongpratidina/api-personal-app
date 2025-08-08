@@ -76,4 +76,48 @@ describe("Authentication Test", () => {
             expect(response.body.message).toBe("email already exist");
         })
     });
+
+    describe("POST /auth/login", () => {
+        it("should return 400 when request body is invalid", async () => {
+            const response = await request(url)
+                .post("/auth/login")
+                .send({});
+            expect(response.status).toBe(400);
+        })
+
+        it("should return 401 when wrong email", async () => {
+            const response = await request(url)
+                .post("/auth/login")
+                .send({
+                    email: "wrong-email@test.com",
+                    password: user.password
+                });
+            expect(response.status).toBe(401);
+            expect(response.body.message).toBe("wrong email or password");
+        })
+
+        it("should return 401 when wrong password", async () => {
+            const response = await request(url)
+                .post("/auth/login")
+                .send({
+                    email: user.email,
+                    password: "wrong-password"
+                });
+            expect(response.status).toBe(401);
+            expect(response.body.message).toBe("wrong email or password");
+        })
+
+        it("should return 200 when login success", async () => {
+            const response = await request(url)
+                .post("/auth/login")
+                .send({
+                    email: user.email,
+                    password: user.password
+                });
+            expect(response.status).toBe(200);
+            expect(response.body.message).toBe("login success");
+            expect(response.body.token).toBeDefined();
+        })
+        
+    });
 });

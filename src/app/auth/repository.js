@@ -22,4 +22,15 @@ export default class AuthRepository {
         });
     }
 
+    static async login(email){
+        return await db.user.findUnique({
+            where: { email },
+            select: {
+                id: true,
+                email: true,
+                passwordHash: true,
+            }
+        })
+    }
+
 }
