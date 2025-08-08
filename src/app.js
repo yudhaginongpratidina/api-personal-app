@@ -11,12 +11,14 @@ import cors from 'cors';
 // --------------------------------------------
 import ErrorMiddleware from './core/middleware/error.middleware.js';
 import NotFoundMiddleware from './core/middleware/not-found.middleware.js';
+import AuthenticatedMiddleware from './core/middleware/authenticated.js';
 
 
 // --------------------------------------------
 // controllers from app
 // --------------------------------------------
 import AuthController from './app/auth/controller.js';
+import AccountController from './app/account/controller.js';
 
 
 // --------------------------------------------
@@ -41,6 +43,10 @@ app.post('/auth/register', AuthController.Register);
 app.post('/auth/login', AuthController.Login);
 app.get('/auth/token', AuthController.Token);
 app.post('/auth/logout', AuthController.Logout);
+
+app.get('/account', AuthenticatedMiddleware, AccountController.GetAccount);
+app.patch('/account/password', AuthenticatedMiddleware, AccountController.ChangePassword);
+app.delete('/account', AuthenticatedMiddleware, AccountController.DeleteAccount);
 
 
 // --------------------------------------------
