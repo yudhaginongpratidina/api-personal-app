@@ -1,0 +1,64 @@
+{
+    "name": "express-personal-app",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "start": "node ./src/server.js",
+        "test": "jest --runInBand",
+        "dev": "nodemon ./src/server.js"
+    },
+    "jest": {
+        "transform": {
+            "^.+\\.[t|j]sx?$": "babel-jest"
+        },
+        "verbose": true,
+        "collectCoverage": false,
+        "coverageThreshold": {
+            "global": {
+                "branches": 100,
+                "functions": 100,
+                "lines": 100,
+                "statements": 100
+            }
+        },
+        "collectCoverageFrom": [
+            "!**/node_modules/**",
+            "!index.js",
+            "!**/dist/**"
+        ]
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "packageManager": "pnpm@10.6.5",
+    "dependencies": {
+        "@prisma/client": "^6.13.0",
+        "bcrypt": "^6.0.0",
+        "cookie-parser": "^1.4.7",
+        "cors": "^2.8.5",
+        "dotenv": "^17.2.1",
+        "express": "^5.1.0",
+        "zod": "^4.0.15"
+    },
+    "devDependencies": {
+        "@babel/plugin-transform-runtime": "^7.28.0",
+        "@babel/preset-env": "^7.28.0",
+        "@babel/runtime": "^7.28.2",
+        "babel-jest": "^30.0.5",
+        "jest": "^30.0.5",
+        "nodemon": "^3.1.10",
+        "prisma": "^6.13.0",
+        "supertest": "^7.1.4"
+    },
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "@prisma/client",
+            "@prisma/engines",
+            "bcrypt",
+            "prisma",
+            "unrs-resolver"
+        ]
+    }
+}
