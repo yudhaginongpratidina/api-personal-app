@@ -20,6 +20,7 @@ import UploadAvatarMiddleware from './core/middleware/avatar.js';
 // --------------------------------------------
 import AuthController from './app/auth/controller.js';
 import AccountController from './app/account/controller.js';
+import PortfolioController from './app/portfolio/controller.js';
 
 
 // --------------------------------------------
@@ -51,6 +52,11 @@ app.patch('/account/avatar', AuthenticatedMiddleware, UploadAvatarMiddleware, Ac
 app.patch('/account/password', AuthenticatedMiddleware, AccountController.ChangePassword);
 app.delete('/account', AuthenticatedMiddleware, AccountController.DeleteAccount);
 
+app.post('/portfolio', AuthenticatedMiddleware, PortfolioController.Create);
+app.get('/portfolio', AuthenticatedMiddleware, PortfolioController.GetMyPortfolio);
+app.get('/portfolio/:id', AuthenticatedMiddleware, PortfolioController.GetDetail);
+app.patch('/portfolio/:id', AuthenticatedMiddleware, PortfolioController.Update);
+app.delete('/portfolio/:id', AuthenticatedMiddleware, PortfolioController.Delete);
 
 // --------------------------------------------
 // middlewares for end routes
