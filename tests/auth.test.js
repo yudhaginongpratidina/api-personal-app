@@ -124,6 +124,26 @@ describe("Authentication Test", () => {
         })
     });
 
+    describe("GET /auth/token", () => {
+        it("should return 200 when token refreshed", async () => {
+            const response = await request(url)
+                .get("/auth/token")
+                .set('Cookie', cookies)
+                .send();
+            expect(response.status).toBe(200);
+            expect(response.body.message).toBe("token refreshed");
+            expect(response.body.token).toBeDefined();
+        })
+
+        it("should return 401 when unauthenticated", async () => {
+            const response = await request(url)
+                .get("/auth/token")
+                .send();
+            expect(response.status).toBe(401);
+            expect(response.body.message).toBe("authentication required");
+        })
+    });
+
     describe("POST /auth/logout", () => {
         it("should return 200 when logout success", async () => {
             const response = await request(url)

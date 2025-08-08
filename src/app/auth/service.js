@@ -1,6 +1,6 @@
 import AuthRepository from './repository.js';
 import ResponseError from "../../core/utils/response-error.js";
-import { generateToken } from "../../core/utils/jwt.js";
+import { generateToken, refreshAccessToken } from "../../core/utils/jwt.js";
 import bcrypt from 'bcrypt';
 
 export default class AuthService {
@@ -25,6 +25,12 @@ export default class AuthService {
 
         const payload = { id: data.id };
         const response = await generateToken(payload);
+        return response;
+    }
+
+    static async Token(token){
+        const generate = await refreshAccessToken(token);
+        const response = generate.access_token;
         return response;
     }
 

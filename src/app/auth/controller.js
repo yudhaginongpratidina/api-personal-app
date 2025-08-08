@@ -52,6 +52,24 @@ export default class AuthController {
         }
     }
 
+    static async Token(req, res, next) {
+        try {
+            const authenticated = req.cookies.authenticated;
+            const refresh_token = req.cookies.refresh_token;
+
+            if (!authenticated) { throw new ResponseError(401, 'authentication required') }
+            if (!refresh_token) { throw new ResponseError(401, 'refresh token missing') }
+
+            const response = await AuthService.Token(refresh_token);
+            return res.json({
+                message: 'token refreshed',
+                token: response
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     static async Logout(req, res, next) {
         try {
             const authenticated = req.cookies.authenticated;
