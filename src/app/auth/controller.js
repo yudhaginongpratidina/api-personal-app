@@ -1,4 +1,5 @@
 import Validation from "../../core/utils/validation.js";
+import ResponseError from "../../core/utils/response-error.js";
 import { RegisterSchema, LoginSchema } from "./model.js";
 import AuthService from "./service.js";
 
@@ -46,6 +47,31 @@ export default class AuthController {
                 message: "login success",
                 token: access_token
             })
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async Logout(req, res, next) {
+        try {
+            const authenticated = req.cookies.authenticated;
+            if (!authenticated) { throw new ResponseError(401, 'unauthenticated') }
+
+            const cookieOptions = {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                path: '/',
+            };
+
+            if (process.env.NODE_ENV === 'production' && process.env.DOMAIN) {
+                cookieOptions.domain = process.env.DOMAIN;
+            }
+
+            res.clearCookie('refresh_token', cookieOptions);
+            res.clearCookie('authenticated', cookieOptions);
+
+            res.json({ message: 'logout success' });
         } catch (error) {
             next(error);
         }

@@ -16,6 +16,8 @@ describe("Authentication Test", () => {
         await db.$disconnect();
     });
 
+    let cookies = "";
+
     const user = {
         full_name: "user",
         email: "user@test.com",
@@ -117,7 +119,27 @@ describe("Authentication Test", () => {
             expect(response.status).toBe(200);
             expect(response.body.message).toBe("login success");
             expect(response.body.token).toBeDefined();
+
+            cookies = response.headers['set-cookie'];
         })
-        
+    });
+
+    describe("POST /auth/logout", () => {
+        it("should return 200 when logout success", async () => {
+            const response = await request(url)
+                .post("/auth/logout")
+                .set('Cookie', cookies)
+                .send();
+            expect(response.status).toBe(200);
+            expect(response.body.message).toBe("logout success");
+        })
+
+        it("should return 401 when unauthenticated", async () => {
+            const response = await request(url)
+                .post("/auth/logout")
+                .send();
+            expect(response.status).toBe(401);
+            expect(response.body.message).toBe("unauthenticated");
+        })
     });
 });

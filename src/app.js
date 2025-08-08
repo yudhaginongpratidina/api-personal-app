@@ -39,6 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 // --------------------------------------------
 app.post('/auth/register', AuthController.Register);
 app.post('/auth/login', AuthController.Login);
+app.post('/auth/logout', AuthController.Logout);
 
 
 // --------------------------------------------
