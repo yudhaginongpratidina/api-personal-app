@@ -28,10 +28,24 @@ model Portfolio {
     repoUrl     String   @map("repo_url")
     demoUrl     String   @map("demo_url")
     description String
+    archived    Boolean  @default(false)
     createdAt   DateTime @default(now()) @map("created_at")
     updatedAt   DateTime @updatedAt @map("updated_at")
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    images PortfolioImage[]
+    user   User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@map("portfolios")
+}
+
+model PortfolioImage {
+    id          String   @id @default(cuid())
+    portfolioId String   @map("portfolio_id")
+    fileName    String
+    createdAt   DateTime @default(now()) @map("created_at")
+    updatedAt   DateTime @updatedAt @map("updated_at")
+
+    portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+    @@map("portfolio_images")
 }
