@@ -13,6 +13,7 @@ import ErrorMiddleware from './core/middleware/error.middleware.js';
 import NotFoundMiddleware from './core/middleware/not-found.middleware.js';
 import AuthenticatedMiddleware from './core/middleware/authenticated.js';
 import UploadAvatarMiddleware from './core/middleware/avatar.js';
+import UploadPortfolioImageMiddleware from './core/middleware/portfolio-image.js';
 
 
 // --------------------------------------------
@@ -21,6 +22,7 @@ import UploadAvatarMiddleware from './core/middleware/avatar.js';
 import AuthController from './app/auth/controller.js';
 import AccountController from './app/account/controller.js';
 import PortfolioController from './app/portfolio/controller.js';
+import PortfolioImageController from './app/portfolio-image/controller.js';
 
 
 // --------------------------------------------
@@ -57,6 +59,10 @@ app.get('/portfolio', AuthenticatedMiddleware, PortfolioController.GetMyPortfoli
 app.get('/portfolio/:id', AuthenticatedMiddleware, PortfolioController.GetDetail);
 app.patch('/portfolio/:id', AuthenticatedMiddleware, PortfolioController.Update);
 app.delete('/portfolio/:id', AuthenticatedMiddleware, PortfolioController.Delete);
+
+app.post('/portfolio/:id/image', AuthenticatedMiddleware, UploadPortfolioImageMiddleware, PortfolioImageController.Upload);
+app.get('/portfolio/:id/image/:imageId', AuthenticatedMiddleware, PortfolioImageController.GetImage);
+app.delete('/portfolio/:id/image/:imageId', AuthenticatedMiddleware, PortfolioImageController.DeleteImage);
 
 // --------------------------------------------
 // middlewares for end routes
