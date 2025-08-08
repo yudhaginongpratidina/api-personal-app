@@ -21,7 +21,33 @@ export default class AccountController {
         }
     }
 
-    static async ChangePassword(req, res, next){
+    static async GetAvatar(req, res, next) {
+        try {
+            const token = req.token;
+            const response = await AuthService.GetAvatar(token.id);
+            res.setHeader('Content-Type', 'image/jpeg');
+            res.setHeader('Cache-Control', 'public, max-age=31536000');
+            res.sendFile(response);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async UpdateAvatar(req, res, next) {
+        try {
+            const token = req.token;
+            const data = req.image;
+            const response = await AuthService.UpdateAvatar(token.id, data.filename);
+            return res.status(200).json({
+                message: "update avatar success",
+                data: response
+            })
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    static async ChangePassword(req, res, next) {
         try {
             const token = req.token;
             const data = await validate(ChangePasswordSchema, req.body);
@@ -35,7 +61,7 @@ export default class AccountController {
         }
     }
 
-    static async DeleteAccount(req, res, next){
+    static async DeleteAccount(req, res, next) {
         try {
             const token = req.token;
             const data = await validate(DeleteAccountSchema, req.body);

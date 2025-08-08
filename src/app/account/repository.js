@@ -9,6 +9,7 @@ export default class AccountRepository {
                 id: true,
                 email: true,
                 fullName: true,
+                avatar: true
             }
         });
     }
@@ -18,7 +19,20 @@ export default class AccountRepository {
             where: { id },
             select: {
                 id: true,
-                passwordHash: true
+                passwordHash: true,
+                avatar: true
+            }
+        });
+    }
+
+    static async update_avater(id, fileName){
+        return await db.user.update({
+            where: { id },
+            data: {
+                avatar: fileName
+            },
+            select: {
+                id: true,
             }
         });
     }

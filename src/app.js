@@ -12,6 +12,7 @@ import cors from 'cors';
 import ErrorMiddleware from './core/middleware/error.middleware.js';
 import NotFoundMiddleware from './core/middleware/not-found.middleware.js';
 import AuthenticatedMiddleware from './core/middleware/authenticated.js';
+import UploadAvatarMiddleware from './core/middleware/avatar.js';
 
 
 // --------------------------------------------
@@ -45,6 +46,8 @@ app.get('/auth/token', AuthController.Token);
 app.post('/auth/logout', AuthController.Logout);
 
 app.get('/account', AuthenticatedMiddleware, AccountController.GetAccount);
+app.get('/account/avatar', AuthenticatedMiddleware, AccountController.GetAvatar);
+app.patch('/account/avatar', AuthenticatedMiddleware, UploadAvatarMiddleware, AccountController.UpdateAvatar);
 app.patch('/account/password', AuthenticatedMiddleware, AccountController.ChangePassword);
 app.delete('/account', AuthenticatedMiddleware, AccountController.DeleteAccount);
 
