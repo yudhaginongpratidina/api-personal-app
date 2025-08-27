@@ -1,5 +1,10 @@
 // import dependencies
 import express from 'express';
+import cors from 'cors';
+
+
+// import config
+import corsOrigin from './config/cors-origin';
 
 
 // import middleware
@@ -11,7 +16,15 @@ import NotFoundMiddleware from "@/middleware/not-found-middleware";
 const app = express();
 
 
-// middleware
+// cors config
+app.use(cors({
+    origin: corsOrigin,
+    credentials: true,
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+}));
+
+
+// middleware 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
