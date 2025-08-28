@@ -1,4 +1,5 @@
 // import dependencies
+import cookieParser from 'cookie-parser';
 import express from 'express';
 import cors from 'cors';
 
@@ -30,6 +31,7 @@ app.use(cors({
 
 // middleware 
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 

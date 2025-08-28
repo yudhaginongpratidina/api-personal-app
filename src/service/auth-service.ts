@@ -1,5 +1,8 @@
+import bcrypt from "bcrypt";
+
 import AuthRepository from "@/repository/auth-repository";
 import ResponseError from "@/utils/response-error";
+import { generateTokens, decodeToken } from "@/utils/jwt";
 
 export default class AuthService {
 
@@ -17,14 +20,15 @@ export default class AuthService {
             }
         });
 
+        data.password = await bcrypt.hash(data.password, 10);
         const response = await AuthRepository.createUser(data);
         return response
     }
 
-    static async login(data: { email: string, password: string }) {
-        const response = await AuthRepository.getUserWithPasswordByEmail(data.email);
+    static async login(data: { email: string, password: string, ipAddress: string, userAgent: string, deviceType: string }) {
+        const user = await AuthRepository.getUserWithPasswordByEmail(data.email);
 
-        if (!response) {
+        if (!user) {
             throw new ResponseError({
                 status: 401,
                 code: "INVALID_CREDENTIALS",
@@ -32,8 +36,7 @@ export default class AuthService {
             });
         }
 
-        const password_match = data.password === response.passwordHash;
-
+        const password_match = await bcrypt.compare(data.password, user.passwordHash);
         if (!password_match) {
             throw new ResponseError({
                 status: 401,
@@ -42,8 +45,72 @@ export default class AuthService {
             });
         }
 
+        const session: any = await AuthRepository.checkSession(user.id, data.ipAddress, data.userAgent, data.deviceType);
 
-        return response
+        if (session) {
+            const now = new Date();
+            const expiredAt = new Date(session.expiredAt);
+
+            if (expiredAt > now) {
+                throw new ResponseError({
+                    status: 401,
+                    code: "USER_ALREADY_LOGGED_IN",
+                    message: "You are already logged in on this device",
+                });
+            } else {
+                await AuthRepository.deleteSession(session.id);
+            }
+        }
+
+        const token = generateTokens(user.id);
+        const refreshTokenHash = await bcrypt.hash(token.refreshToken, 10);
+        await AuthRepository.createSession(
+            user.id,
+            refreshTokenHash,
+            data.ipAddress,
+            data.userAgent,
+            data.deviceType
+        );
+
+        return token
+    }
+
+    static async logout(refreshToken: string) {
+        if (!refreshToken) {
+            throw new ResponseError({
+                status: 400,
+                code: "NOT_LOGGED_IN",
+                message: "You are not logged in. Please login first."
+            });
+        }
+
+        const decoded = decodeToken(refreshToken, "refresh");
+        const sessions = await AuthRepository.getAllSessions(decoded.id);
+
+        const matchedSession = await Promise.all(
+            sessions.map(async (session) => {
+                const now = new Date();
+                const expiredAt = new Date(session.expiredAt);
+
+                if (expiredAt <= now) {
+                    await AuthRepository.deleteSession(session.id);
+                    return null;
+                }
+                
+                const match = await bcrypt.compare(refreshToken, session.refreshTokenHash);
+                return match ? session : null;
+            })
+        ).then(results => results.find(Boolean));
+
+        if (!matchedSession) {
+            throw new ResponseError({
+                status: 400,
+                code: "ALREADY_LOGGED_OUT",
+                message: "You are already logged out or the session has expired."
+            });
+        }
+
+        await AuthRepository.deleteSession(matchedSession.id);
     }
 
 }
