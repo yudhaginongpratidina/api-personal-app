@@ -6,6 +6,7 @@ import { RegisterSchema, LoginSchema } from "@/schema/auth-schema";
 
 import AuthService from "@/service/auth-service";
 import cookieOptions from "@/config/cookie";
+import ResponseError from "@/utils/response-error";
 import ResponseSuccess from "@/utils/response-success";
 
 export default class AuthController {
@@ -56,30 +57,36 @@ export default class AuthController {
     }
 
     static async refreshToken(req: Request, res: Response, next: NextFunction) {
+        const token = req.cookies.refresh_token;
+
         try {
-            const token = req.cookies.refresh_token;
-            const response = await AuthService.refreshToken(token);
+            if (!token) {
+                throw new ResponseError({
+                    status: 401,
+                    code: "NOT_LOGGED_IN",
+                    message: "You are not logged in. Please login first."
+                });
+            }
+
+            const newAccessToken = await AuthService.refreshToken(token);
 
             return new ResponseSuccess({
                 status: 200,
                 code: "SUCCESS_TOKEN_REFRESHED",
                 message: "Token refreshed successfully",
                 data: {
-                    token: response
+                    token: newAccessToken
                 }
             }).send(res);
         } catch (error: any) {
-            if (
-                error.code === "REFRESH_TOKEN_EXPIRED" ||
-                error.code === "ALREADY_LOGGED_OUT"
-            ) {
-                res.clearCookie('refresh_token', cookieOptions);
-                res.clearCookie('authenticated', cookieOptions);
+            if (["REFRESH_TOKEN_EXPIRED", "ALREADY_LOGGED_OUT"].includes(error?.code)) {
+                res.clearCookie("refresh_token", cookieOptions);
+                res.clearCookie("authenticated", cookieOptions);
             }
-
-            next(error);
+            return next(error);
         }
     }
+
 
 
     static async logout(req: Request, res: Response, next: NextFunction) {

@@ -1,8 +1,8 @@
 import jwt, { type JwtPayload, type SignOptions, type Algorithm } from "jsonwebtoken";
 import ResponseError from "@/utils/response-error";
 import { JWT_CONFIG } from "@/config/jwt";
+import AuthRepository from "@/repository/auth-repository";
 
-// Payload type
 export interface AccessTokenPayload {
     id: string;
 }
@@ -11,9 +11,6 @@ export interface RefreshTokenPayload {
     id: string;
 }
 
-/**
- * Generate access & refresh tokens
- */
 export function generateTokens(userId: string) {
     const accessPayload: AccessTokenPayload = { id: userId };
     const refreshPayload: RefreshTokenPayload = { id: userId };
@@ -31,9 +28,6 @@ export function generateTokens(userId: string) {
     return { accessToken, refreshToken };
 }
 
-/**
- * Decode and verify token
- */
 export function decodeToken(
     token: string,
     type: "access" | "refresh" = "access"
@@ -85,10 +79,6 @@ export function decodeToken(
     }
 }
 
-
-/**
- * Refresh access token using a valid refresh token
- */
 export function refreshAccessToken(refreshToken: string) {
     try {
         const decoded = decodeToken(refreshToken, "refresh");

@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 import AuthRepository from "@/repository/auth-repository";
 import ResponseError from "@/utils/response-error";
@@ -84,9 +85,33 @@ export default class AuthService {
             });
         }
 
-        const decoded = decodeToken(refreshToken, "refresh");
-        const sessions = await AuthRepository.getAllSessions(decoded.id);
+        let decoded: { id: string };
 
+        try {
+            decoded = decodeToken(refreshToken, "refresh");
+        } catch (error: any) {
+            if (error.code === "REFRESH_TOKEN_EXPIRED") {
+                try {
+                    const payload = jwt.decode(refreshToken) as { id?: string };
+                    if (payload?.id) {
+                        const sessions = await AuthRepository.getAllSessions(payload.id);
+                        for (const session of sessions) {
+                            const match = await bcrypt.compare(refreshToken, session.refreshTokenHash);
+                            if (match) {
+                                await AuthRepository.deleteSession(session.id);
+                                break;
+                            }
+                        }
+                    }
+                } catch (cleanupErr) {
+                    console.warn("Failed cleaning up expired session:", cleanupErr);
+                }
+            }
+
+            throw error;
+        }
+
+        const sessions = await AuthRepository.getAllSessions(decoded.id);
         let matchedSession = null;
 
         for (const session of sessions) {
@@ -121,6 +146,7 @@ export default class AuthService {
         const token = refreshAccessToken(refreshToken);
         return token;
     }
+
 
 
     static async logout(refreshToken: string) {
