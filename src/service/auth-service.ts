@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 
 import AuthRepository from "@/repository/auth-repository";
 import ResponseError from "@/utils/response-error";
-import { generateTokens, decodeToken } from "@/utils/jwt";
+import { generateTokens, decodeToken, refreshAccessToken } from "@/utils/jwt";
 
 export default class AuthService {
 
@@ -75,6 +75,54 @@ export default class AuthService {
         return token
     }
 
+    static async refreshToken(refreshToken: string) {
+        if (!refreshToken) {
+            throw new ResponseError({
+                status: 401,
+                code: "NOT_LOGGED_IN",
+                message: "You are not logged in. Please login first."
+            });
+        }
+
+        const decoded = decodeToken(refreshToken, "refresh");
+        const sessions = await AuthRepository.getAllSessions(decoded.id);
+
+        let matchedSession = null;
+
+        for (const session of sessions) {
+            const now = new Date();
+            const expiredAt = new Date(session.expiredAt);
+
+            if (expiredAt <= now) {
+                await AuthRepository.deleteSession(session.id);
+
+                throw new ResponseError({
+                    status: 401,
+                    code: "REFRESH_TOKEN_EXPIRED",
+                    message: "Your refresh token has expired. Please login again."
+                });
+            }
+
+            const match = await bcrypt.compare(refreshToken, session.refreshTokenHash);
+            if (match) {
+                matchedSession = session;
+                break;
+            }
+        }
+
+        if (!matchedSession) {
+            throw new ResponseError({
+                status: 401,
+                code: "ALREADY_LOGGED_OUT",
+                message: "You are already logged out or the session is invalid."
+            });
+        }
+
+        const token = refreshAccessToken(refreshToken);
+        return token;
+    }
+
+
     static async logout(refreshToken: string) {
         if (!refreshToken) {
             throw new ResponseError({
@@ -96,7 +144,7 @@ export default class AuthService {
                     await AuthRepository.deleteSession(session.id);
                     return null;
                 }
-                
+
                 const match = await bcrypt.compare(refreshToken, session.refreshTokenHash);
                 return match ? session : null;
             })

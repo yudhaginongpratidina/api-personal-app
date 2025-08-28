@@ -9,6 +9,7 @@ import corsOrigin from './config/cors-origin';
 
 
 // import middleware
+import AuthMiddleware from "@/middleware/auth-middleware";
 import ErrorMiddlewar from "@/middleware/error-middleware";
 import NotFoundMiddleware from "@/middleware/not-found-middleware";
 
@@ -35,6 +36,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 
+app.get("/auth/token", AuthController.refreshToken);
 app.post("/auth/register", AuthController.register);
 app.post("/auth/login", AuthController.login);
 app.post("/auth/logout", AuthController.logout);

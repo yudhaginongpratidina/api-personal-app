@@ -69,10 +69,14 @@ export function decodeToken(
         if (err instanceof jwt.TokenExpiredError) {
             throw new ResponseError({
                 status: 401,
-                code: "TOKEN_EXPIRED",
-                message: "Token has expired",
+                code: type === "refresh" ? "REFRESH_TOKEN_EXPIRED" : "ACCESS_TOKEN_EXPIRED",
+                message:
+                    type === "refresh"
+                        ? "Your refresh token has expired. Please login again."
+                        : "Your access token has expired. Please refresh your session.",
             });
         }
+
         throw new ResponseError({
             status: 401,
             code: "INVALID_TOKEN",
@@ -80,6 +84,7 @@ export function decodeToken(
         });
     }
 }
+
 
 /**
  * Refresh access token using a valid refresh token

@@ -55,6 +55,33 @@ export default class AuthController {
         }
     }
 
+    static async refreshToken(req: Request, res: Response, next: NextFunction) {
+        try {
+            const token = req.cookies.refresh_token;
+            const response = await AuthService.refreshToken(token);
+
+            return new ResponseSuccess({
+                status: 200,
+                code: "SUCCESS_TOKEN_REFRESHED",
+                message: "Token refreshed successfully",
+                data: {
+                    token: response
+                }
+            }).send(res);
+        } catch (error: any) {
+            if (
+                error.code === "REFRESH_TOKEN_EXPIRED" ||
+                error.code === "ALREADY_LOGGED_OUT"
+            ) {
+                res.clearCookie('refresh_token', cookieOptions);
+                res.clearCookie('authenticated', cookieOptions);
+            }
+
+            next(error);
+        }
+    }
+
+
     static async logout(req: Request, res: Response, next: NextFunction) {
         try {
             const token = req.cookies.refresh_token;
