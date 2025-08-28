@@ -1,7 +1,6 @@
 import jwt, { type JwtPayload, type SignOptions, type Algorithm } from "jsonwebtoken";
 import ResponseError from "@/utils/response-error";
 import { JWT_CONFIG } from "@/config/jwt";
-import AuthRepository from "@/repository/auth-repository";
 
 export interface AccessTokenPayload {
     id: string;
