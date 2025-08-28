@@ -12,6 +12,10 @@ import ErrorMiddlewar from "@/middleware/error-middleware";
 import NotFoundMiddleware from "@/middleware/not-found-middleware";
 
 
+// import controllers
+import AuthController from "@/controller/auth-controller";
+
+
 // initialize express
 const app = express();
 
@@ -29,9 +33,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-});
+app.post("/auth/register", AuthController.REGISTER);
+app.post("/auth/login", AuthController.LOGIN);
+app.post("/auth/logout", AuthController.LOGOUT);
 
 
 // middleware

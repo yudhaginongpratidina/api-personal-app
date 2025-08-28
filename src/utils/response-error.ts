@@ -9,7 +9,6 @@ export default class ResponseError extends Error {
     public status: number;
     public code?: string;
     public details?: any;
-    public timestamp: string;
 
     constructor({ status, message, code, details }: Response) {
         super(message);
@@ -18,7 +17,6 @@ export default class ResponseError extends Error {
         this.status = status;
         this.code = code;
         this.details = details;
-        this.timestamp = new Date().toISOString();
 
         Object.setPrototypeOf(this, new.target.prototype);
     }
@@ -29,7 +27,6 @@ export default class ResponseError extends Error {
             code: this.code,
             message: this.message,
             details: this.details,
-            timestamp: this.timestamp
         };
     }
 }
