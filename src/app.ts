@@ -33,9 +33,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-app.post("/auth/register", AuthController.REGISTER);
-app.post("/auth/login", AuthController.LOGIN);
-app.post("/auth/logout", AuthController.LOGOUT);
+app.post("/auth/register", AuthController.register);
+app.post("/auth/login", AuthController.login);
+app.post("/auth/logout", AuthController.logout);
 
 
 // middleware
