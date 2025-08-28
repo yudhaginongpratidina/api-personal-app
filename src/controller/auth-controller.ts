@@ -33,7 +33,7 @@ export default class AuthController {
             return new ResponseSuccess({
                 status: 200,
                 code: "SUCCESS_USER_LOGGED_IN",
-                message: "User fetched successfully",
+                message: "User logged in successfully",
                 data: response
             }).send(res);
         } catch (error) {

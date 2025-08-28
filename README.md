@@ -26,3 +26,7 @@ bun install
 bun run dev     # running development
 bun run start   # running production
 ```
+
+## API Documentation
+
+- [Authentication](docs/api-auth.md)
