@@ -1,4 +1,4 @@
-import { pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
+import { pgTable, timestamp, varchar, text, pgEnum } from "drizzle-orm/pg-core";
 import { createId } from "@paralleldrive/cuid2";
 
 export const users = pgTable("users", {
@@ -7,7 +7,6 @@ export const users = pgTable("users", {
     passwordHash: varchar("password_hash", { length: 255 }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-    deletedAt: timestamp("deleted_at", { withTimezone: true }),
 });
 
 export const sessions = pgTable("sessions", {
@@ -21,3 +20,39 @@ export const sessions = pgTable("sessions", {
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+
+export const projectStatusEnum = pgEnum("project_status", [
+    "development",
+    "demo",
+    "production",
+    "maintenance",
+    "archive",
+]);
+
+export const projectCategoryEnum = pgEnum("project_category", [
+    "website",
+    "mobile",
+    "desktop",
+    "backend",
+    "internet_of_things",
+    "saas",
+    "game",
+]);
+
+export const projects = pgTable("projects", {
+    id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => createId()),
+    userId: varchar("user_id", { length: 36 }).notNull().references(() => users.id, { onDelete: "cascade" }),
+    name: varchar("name", { length: 255 }).notNull(),
+    category: projectCategoryEnum("category").notNull(),
+    techStack: text("tech_stack").notNull(),
+    description: text("description").notNull(),
+    challenge: text("challenge").notNull(),
+    status: projectStatusEnum("status").notNull(),
+    impact: text("impact").notNull(),
+    repositoryUrl: varchar("repository_url", { length: 255 }).notNull(),
+    demoUrl: varchar("demo_url", { length: 255 }),
+    thumbnail: varchar("thumbnail", { length: 255 }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+})

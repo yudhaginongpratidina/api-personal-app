@@ -17,6 +17,7 @@ import NotFoundMiddleware from "@/middleware/not-found-middleware";
 // import controllers
 import AuthController from "@/controller/auth-controller";
 import AccountController from '@/controller/account-controller';
+import ProjectController from '@/controller/project-controller';
 
 
 // initialize express
@@ -42,9 +43,18 @@ app.post("/auth/register", AuthController.register);
 app.post("/auth/login", AuthController.login);
 app.post("/auth/logout", AuthController.logout);
 
-app.get("/account/connection", AuthMiddleware, AccountController.connection);
-app.patch("/account/password", AuthMiddleware, AccountController.changePassword);
-app.delete("/account", AuthMiddleware, AccountController.delete);
+app.get("/account/connection", AuthMiddleware, AccountController.connection);           // get connected device     🟢
+app.patch("/account/password", AuthMiddleware, AccountController.changePassword);       // change password          🟢
+app.delete("/account", AuthMiddleware, AccountController.delete);                       // delete account           🟢
+
+app.post("/projects", AuthMiddleware, ProjectController.createProject);                 // create new project       🟢
+app.get("/projects", ProjectController.getProjects);                                    // get all project          🟢
+app.post("/projects/filter", ProjectController.filterProjects);                         // filter projects          🟢
+app.post("/projects/filter/me", AuthMiddleware, ProjectController.filterProjectMe);     // filter projects by me    🟢
+app.get("/projects/me", AuthMiddleware, ProjectController.getProjecstMe);               // get all project by me    🟢
+app.get("/projects/:id", ProjectController.getProject);                                 // get project by id        🟢
+app.patch("/projects/:id", AuthMiddleware, ProjectController.updateProject);            // update project by id     🟢
+app.delete("/projects/:id", AuthMiddleware, ProjectController.deleteProject);           // delete project by id     🟢
 
 // middleware
 app.use(ErrorMiddlewar);
