@@ -16,6 +16,7 @@ import NotFoundMiddleware from "@/middleware/not-found-middleware";
 
 // import controllers
 import AuthController from "@/controller/auth-controller";
+import AccountController from '@/controller/account-controller';
 
 
 // initialize express
@@ -41,6 +42,8 @@ app.post("/auth/register", AuthController.register);
 app.post("/auth/login", AuthController.login);
 app.post("/auth/logout", AuthController.logout);
 
+app.patch("/account/password", AuthMiddleware, AccountController.changePassword);
+app.delete("/account", AuthMiddleware, AccountController.delete);
 
 // middleware
 app.use(ErrorMiddlewar);
