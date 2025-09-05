@@ -5,6 +5,11 @@ import AccountRepository from "@/repository/account-repository";
 
 export default class AccountService {
 
+    static getConnectedDevice(userId: string) {
+        const response = AccountRepository.getConnectedDevice(userId);
+        return response;
+    }
+
     static async changePassword(userId: string, oldPassword: string, newPassword: string) {
         const data = await AccountRepository.findUserById(userId);
         if (!data) throw new ResponseError({

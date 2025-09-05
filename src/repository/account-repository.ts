@@ -5,6 +5,19 @@ import { users, sessions } from "@/config/schema";
 
 export default class AccountRepository {
 
+    static async getConnectedDevice(userId: string) {
+        const userSession = await db
+            .select({
+                id: sessions.id,
+                userId: sessions.userId,
+                userAgent: sessions.userAgent,
+                deviceType: sessions.deviceType
+            })
+            .from(sessions)
+            .where(eq(sessions.userId, userId));
+        return userSession;
+    }
+
     static async findUserById(id: string) {
         const [user] = await db
             .select({

@@ -8,6 +8,21 @@ import AccountService from "@/service/account-service";
 
 export default class AccountController {
 
+    static async connection(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user = (req as any).user;
+            const response = await AccountService.getConnectedDevice(user.id);
+            return new ResponseSuccess({
+                status: 200,
+                code: "SUCCESS_GET_CONNECTED_DEVICE",
+                message: "Get connected device successfully",
+                data: response
+            }).send(res);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     static async changePassword(req: Request, res: Response, next: NextFunction) {
         try {
             const user = (req as any).user;

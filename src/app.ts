@@ -42,6 +42,7 @@ app.post("/auth/register", AuthController.register);
 app.post("/auth/login", AuthController.login);
 app.post("/auth/logout", AuthController.logout);
 
+app.get("/account/connection", AuthMiddleware, AccountController.connection);
 app.patch("/account/password", AuthMiddleware, AccountController.changePassword);
 app.delete("/account", AuthMiddleware, AccountController.delete);
 
