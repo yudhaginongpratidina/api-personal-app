@@ -18,6 +18,7 @@ import NotFoundMiddleware from "@/middleware/not-found-middleware";
 import AuthController from "@/controller/auth-controller";
 import AccountController from '@/controller/account-controller';
 import ProjectController from '@/controller/project-controller';
+import ExperienceController from '@/controller/experienc-controller';
 
 
 // initialize express
@@ -55,6 +56,12 @@ app.get("/projects/me", AuthMiddleware, ProjectController.getProjecstMe);       
 app.get("/projects/:id", ProjectController.getProject);                                 // get project by id        🟢
 app.patch("/projects/:id", AuthMiddleware, ProjectController.updateProject);            // update project by id     🟢
 app.delete("/projects/:id", AuthMiddleware, ProjectController.deleteProject);           // delete project by id     🟢
+
+app.post("/experiences", AuthMiddleware, ExperienceController.createExperienc);         // create new experience    🟢
+app.get("/experiences", ExperienceController.getExperiences);                           // get all experience       🟢
+app.get("/experiences/:id", ExperienceController.getExperience);                        // get experience by id     🟢
+app.patch("/experiences/:id", AuthMiddleware, ExperienceController.updateExperience);   // update experience by id  🟢
+app.delete("/experiences/:id", AuthMiddleware, ExperienceController.deleteExperience);  // delete experience by id  🟢
 
 // middleware
 app.use(ErrorMiddlewar);

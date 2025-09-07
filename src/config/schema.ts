@@ -21,38 +21,46 @@ export const sessions = pgTable("sessions", {
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-
-export const projectStatusEnum = pgEnum("project_status", [
-    "development",
-    "demo",
-    "production",
-    "maintenance",
-    "archive",
-]);
-
-export const projectCategoryEnum = pgEnum("project_category", [
-    "website",
-    "mobile",
-    "desktop",
-    "backend",
-    "internet_of_things",
-    "saas",
-    "game",
-]);
-
 export const projects = pgTable("projects", {
     id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => createId()),
     userId: varchar("user_id", { length: 36 }).notNull().references(() => users.id, { onDelete: "cascade" }),
     name: varchar("name", { length: 255 }).notNull(),
-    category: projectCategoryEnum("category").notNull(),
+    category: pgEnum("project_category", [
+        "website",
+        "mobile",
+        "desktop",
+        "backend",
+        "internet_of_things",
+        "saas",
+        "game",
+    ])("category").notNull(),
     techStack: text("tech_stack").notNull(),
     description: text("description").notNull(),
     challenge: text("challenge").notNull(),
-    status: projectStatusEnum("status").notNull(),
+    status: pgEnum("project_status", [
+        "development",
+        "demo",
+        "production",
+        "maintenance",
+        "archive",
+    ])("status").notNull(),
     impact: text("impact").notNull(),
     repositoryUrl: varchar("repository_url", { length: 255 }).notNull(),
     demoUrl: varchar("demo_url", { length: 255 }),
     thumbnail: varchar("thumbnail", { length: 255 }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+})
+
+export const experiences = pgTable("experiences", {
+    id: varchar("id", { length: 36 }).primaryKey().$defaultFn(() => createId()),
+    userId: varchar("user_id", { length: 36 }).notNull().references(() => users.id, { onDelete: "cascade" }),
+    title: varchar("title", { length: 255 }).notNull(),
+    company: varchar("company", { length: 255 }).notNull(),
+    position: varchar("position", { length: 255 }).notNull(),
+    startDate: varchar("start_date", { length: 50 }).notNull(),
+    endDate: varchar("end_date", { length: 50 }),
+    description: text("description").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 })
